@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router";
 import { authService } from "@/services/auth.service";
 import { useAuthStore } from "@/store/auth.store";
 
-export default function Navbar() {
+export default function AppNavbar() {
   const user = useAuthStore((state) => state.user);
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const navigate = useNavigate();

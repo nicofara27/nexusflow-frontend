@@ -1,10 +1,10 @@
 import { Outlet } from "react-router";
-import Navbar from "./Navbar";
+import AppNavbar from "./AppNavbar";
 
 export default function MainLayout() {
   return (
     <div className="min-h-screen">
-      <Navbar />
+      <AppNavbar />
       <Outlet />
     </div>
   );
