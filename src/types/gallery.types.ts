@@ -1,3 +1,5 @@
+import type { BusinessImagePublicResponse } from "./business.types";
+
 export type GallerySection = "establishment" | "portfolio";
 
 export interface EmployeePortfolio {
@@ -14,6 +16,6 @@ export interface BusinessGalleryHandle {
 
 export interface BusinessGalleryProps {
   businessName: string;
-  establishmentImages: string[];
+  establishmentImages: BusinessImagePublicResponse[];
   employeePortfolios: EmployeePortfolio[];
 }

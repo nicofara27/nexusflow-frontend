@@ -1,28 +1,31 @@
 import BusinessCard from "@/components/business/BusinessCard";
 import BusinessCategories from "@/components/business/BusinessCategories";
 import BusinessSearch from "@/components/search/BusinessSearch";
+import { businessService } from "@/services/business.service";
+import type { BusinessPublicResponse } from "@/types/business.types";
+import { useEffect, useState } from "react";
 
-const featuredBusinesses = [
-  {
-    id: "1",
-    name: "Estetica Asdasd",
-    category: "Barbería",
-    address: "Laprida 1439",
-  },
-  {
-    id: "2",
-    name: "Rocky’s ",
-    category: "Estética",
-    address: "Laprida 1439",
-  },
-  {
-    id: "3",
-    name: "Akuma",
-    category: "Peluquería",
-    address: "Laprida 1439",
-  },
-];
 export default function HomePage() {
+  const [businesses, setBusinesses] = useState<BusinessPublicResponse[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadBusinesses = async () => {
+      try {
+        const data = await businessService.getAllPublic();
+
+        setBusinesses(data);
+      } catch {
+        setError("Error al cargar los emprendimientos");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadBusinesses();
+  }, []);
+
   return (
     <main>
       <div className="marketplace-background relative isolate overflow-hidden">
@@ -85,17 +88,27 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {featuredBusinesses.map((business) => (
-                  <BusinessCard
-                    key={business.id}
-                    id={business.id}
-                    name={business.name}
-                    category={business.category}
-                    address={business.address}
-                  />
-                ))}
-              </div>
+              {isLoading && (
+                <p className="mt-8 text-neutral-600">
+                  Cargando emprendimientos...
+                </p>
+              )}
+              {error && <p className="mt-8 text-red-700">{error}</p>}
+
+              {!isLoading && !error && (
+                <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {businesses.map((business) => (
+                    <BusinessCard
+                      key={business.id}
+                      id={business.id}
+                      name={business.name}
+                      category={business.businessCategoryName}
+                      address={business.address}
+                      imageUrl={business.mainImageUrl ?? undefined}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </section>
         </div>

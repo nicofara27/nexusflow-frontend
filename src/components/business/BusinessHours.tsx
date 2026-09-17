@@ -1,61 +1,73 @@
-interface BusinessDay {
-  dayOfWeek: number;
-  day: string;
-  isOpen: boolean;
-  openTime?: string;
-  closeTime?: string;
-}
+import type { BusinessScheduleResponse } from "@/types/business.types";
 
 interface BusinessHoursProps {
-  schedule: BusinessDay[];
+  schedule: BusinessScheduleResponse[];
 }
 
-export default function BusinessHours({ schedule }: BusinessHoursProps) {
-  const currentDay = new Date().getDay();
+const days = [
+  { dayOfWeek: 1, name: "Lunes" },
+  { dayOfWeek: 2, name: "Martes" },
+  { dayOfWeek: 3, name: "Miércoles" },
+  { dayOfWeek: 4, name: "Jueves" },
+  { dayOfWeek: 5, name: "Viernes" },
+  { dayOfWeek: 6, name: "Sábado" },
+  { dayOfWeek: 0, name: "Domingo" },
+];
+
+export default function BusinessHours({
+  schedule,
+}: BusinessHoursProps) {
+  const formattedSchedule = days.map((day) => {
+    const currentSchedule = schedule.find(
+      (item) => item.dayOfWeek === day.dayOfWeek,
+    );
+
+    if (!currentSchedule) {
+      return {
+        dayOfWeek: day.dayOfWeek,
+        day: day.name,
+        isOpen: false,
+        openTime: null,
+        closeTime: null,
+      };
+    }
+
+    return {
+      dayOfWeek: day.dayOfWeek,
+      day: day.name,
+      isOpen: true,
+      openTime: currentSchedule.startTime.slice(0, 5),
+      closeTime: currentSchedule.endTime.slice(0, 5),
+    };
+  });
 
   return (
     <section>
-      <h2 className="text-2xl font-semibold tracking-tight text-neutral-950">
+      <h2 className="text-xl font-semibold text-neutral-950">
         Horarios
       </h2>
 
-      <div className="mt-6 overflow-hidden rounded-xl border border-neutral-200 bg-white">
-        {schedule.map((day) => {
-          const isToday = day.dayOfWeek === currentDay;
+      <div className="mt-7 space-y-3">
+        {formattedSchedule.map((day) => (
+          <div
+            key={day.dayOfWeek}
+            className="flex items-center justify-between gap-4 text-sm"
+          >
+            <span className="text-neutral-700">
+              {day.day}
+            </span>
 
-          return (
-            <div
-              key={day.dayOfWeek}
-              className="flex items-center justify-between border-b border-neutral-100 px-5 py-4 last:border-b-0"
-            >
-              <div className="flex items-center gap-2">
-                <span
-                  className={
-                    isToday ? "font-medium text-primary" : "text-neutral-700"
-                  }
-                >
-                  {day.day}
-                </span>
-
-                {isToday && (
-                  <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                    Hoy
-                  </span>
-                )}
-              </div>
-
-              <span
-                className={
-                  day.isOpen
-                    ? "text-sm text-neutral-600"
-                    : "text-sm text-neutral-400"
-                }
-              >
-                {day.isOpen ? `${day.openTime} - ${day.closeTime}` : "Cerrado"}
+            {day.isOpen ? (
+              <span className="font-medium text-neutral-950">
+                {day.openTime} - {day.closeTime}
               </span>
-            </div>
-          );
-        })}
+            ) : (
+              <span className="text-neutral-500">
+                Cerrado
+              </span>
+            )}
+          </div>
+        ))}
       </div>
     </section>
   );

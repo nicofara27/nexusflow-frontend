@@ -1,16 +1,55 @@
-interface BusinessReview {
-  id: string;
-  author: string;
-  rating: number;
-  comment: string;
-  date: string;
-}
+import type { ReviewResponse } from "@/types/business.types";
 
 interface BusinessReviewsProps {
   rating: number;
   totalReviews: number;
-  reviews: BusinessReview[];
+  reviews: ReviewResponse[];
 }
+
+const formatReviewDate = (createdAt: string) => {
+  const createdDate = new Date(createdAt);
+  const now = new Date();
+
+  const differenceInSeconds = Math.floor(
+    (now.getTime() - createdDate.getTime()) / 1000,
+  );
+
+  const formatter = new Intl.RelativeTimeFormat("es-AR", {
+    numeric: "always",
+  });
+
+  if (differenceInSeconds < 60) {
+    return "Creado hace unos segundos";
+  }
+
+  const minutes = Math.floor(differenceInSeconds / 60);
+
+  if (minutes < 60) {
+    return `Creado ${formatter.format(-minutes, "minute")}`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+
+  if (hours < 24) {
+    return `Creado ${formatter.format(-hours, "hour")}`;
+  }
+
+  const days = Math.floor(hours / 24);
+
+  if (days < 30) {
+    return `Creado ${formatter.format(-days, "day")}`;
+  }
+
+  const months = Math.floor(days / 30);
+
+  if (months < 12) {
+    return `Creado ${formatter.format(-months, "month")}`;
+  }
+
+  const years = Math.floor(months / 12);
+
+  return `Creado ${formatter.format(-years, "year")}`;
+};
 
 export default function BusinessReviews({
   rating,
@@ -59,7 +98,9 @@ export default function BusinessReviews({
             <div className="flex items-center justify-between gap-4">
               <p className="font-medium text-neutral-950">{review.author}</p>
 
-              <span className="text-xs text-neutral-400">{review.date}</span>
+              <span className="text-xs text-neutral-400">
+                {formatReviewDate(review.createdAt)}
+              </span>
             </div>
 
             <div className="mt-3 flex gap-0.5 text-sm text-amber-500">
@@ -76,9 +117,12 @@ export default function BusinessReviews({
                 </span>
               ))}
             </div>
-            <p className="mt-4 line-clamp-4 text-sm leading-6 text-neutral-600">
-              {review.comment}
-            </p>
+
+            {review.comment && (
+              <p className="mt-4 line-clamp-4 text-sm leading-6 text-neutral-600">
+                {review.comment}
+              </p>
+            )}
           </article>
         ))}
       </div>

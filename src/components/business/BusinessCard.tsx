@@ -18,7 +18,7 @@ export default function BusinessCard({
   return (
     <Link
       to={`/businesses/${id}`}
-      className="group block overflow-hidden rounded-xl border border-neutral-200 bg-white transition-colors hover:border-neutral-300"
+      className="group block overflow-hidden rounded-xl transition-colors hover:border-neutral-300"
     >
       <div className="aspect-[4/3] overflow-hidden bg-[var(--color-brand-subtle)]">
         {imageUrl ? (
@@ -34,16 +34,16 @@ export default function BusinessCard({
         )}
       </div>
 
-      <div className="p-5">
-        <p className="text-sm font-medium text-primary">
-          {category}
-        </p>
-
+      <div className="pt-2">
         <h3 className="mt-1 text-xl font-semibold tracking-tight text-neutral-950">
           {name}
         </h3>
 
         <p className="text-sm text-neutral-500">{address}</p>
+
+        <p className="text-sm font-medium text-primary">
+          {category}
+        </p>
       </div>
     </Link>
   );
