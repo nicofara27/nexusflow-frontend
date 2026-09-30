@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 import BusinessAside from "@/components/business/BusinessAside";
 import BusinessTeam from "@/components/business/BusinessTeam";
 import BusinessReviews from "@/components/business/BusinessReviews";
-import ServiceList from "@/components/business/ServiceList";
+import ServiceList from "@/components/business/service-section/ServiceList";
 import BusinessGallery from "@/components/business/gallery/BusinessGallery";
 import BusinessAbout from "@/components/business/BusinessAbout";
 import BusinessLocation from "@/components/business/BusinessLocation";
@@ -15,17 +15,6 @@ import type { BusinessGalleryHandle } from "@/types/gallery.types";
 import type { BusinessPublicDetailsResponse } from "@/types/business.types";
 import BusinessSectionNav from "@/components/business/BusinessSectionNav";
 
-const employeePortfolios = [
-  {
-    id: "1",
-    name: "Bryan",
-    avatarUrl: "/images/employees/bryan.jpg",
-    images: [
-      "https://images.fresha.com/locations/location-profile-images/2521853/5293983/53baaa2f-9ba6-4167-b120-1814a8d9717a-Fiorestudio-CO-Atlntico-Barranquilla-RiomarSantaMonica-Fresha.jpg?class=gallery-modal-small&watermark=true&f_width=1920&f_quality=75",
-    ],
-  },
-];
-
 export default function BusinessDetailsPage() {
   const [business, setBusiness] =
     useState<BusinessPublicDetailsResponse | null>(null);
@@ -33,6 +22,7 @@ export default function BusinessDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
   const galleryRef = useRef<BusinessGalleryHandle>(null);
@@ -78,6 +68,16 @@ export default function BusinessDetailsPage() {
     return <p>{error ?? "No se encontró el emprendimiento."}</p>;
   }
 
+  const employeePortfolios = business.employees.map((employee) => ({
+    id: employee.id,
+    name: `${employee.firstName} ${employee.lastName}`,
+    images: employee.portfolioImages.map((image) => image.url),
+  }));
+
+  const handleReserve = (serviceId: string) => {
+    navigate(`/businesses/${business.id}/book/${serviceId}`);
+  };
+
   return (
     <main>
       <section id="gallery" className="page-container pt-8">
@@ -89,13 +89,14 @@ export default function BusinessDetailsPage() {
         />
       </section>
       <BusinessSectionNav />
-      <section className="page-container py-10">
+      <div className="page-container py-10">
         <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_360px] xl:gap-14">
           <div className="min-w-0 space-y-16">
             <section id="services" className="scroll-mt-24">
               <ServiceList
                 services={business.services}
-                categories={business.serviceCategories}
+                serviceCategories={business.serviceCategories}
+                onReserve={handleReserve}
               />
             </section>
 
@@ -141,7 +142,7 @@ export default function BusinessDetailsPage() {
             onChooseService={handleChooseService}
           />
         </div>
-      </section>
+      </div>
     </main>
   );
 }
