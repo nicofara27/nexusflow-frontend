@@ -14,7 +14,6 @@ export const businessService = {
 
   async getPublicById(id: string): Promise<BusinessPublicDetailsResponse> {
     const response = await api.get<BusinessPublicDetailsResponse>(`/businesses/${id}`);
-
     return response.data;
   },
 };
