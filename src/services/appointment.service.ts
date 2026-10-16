@@ -27,4 +27,10 @@ export const appointmentService = {
     const response = await api.post<AppointmentResponse>("/appointment", data);
     return response.data;
   },
+
+  async confirmAppointment(token: string) {
+    const response = await api.post("appointment/confirm", { token });
+
+    return response.data;
+  }
 };
