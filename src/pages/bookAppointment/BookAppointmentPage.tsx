@@ -12,9 +12,9 @@ import BookingServiceSelector from "@/components/booking/BookingServiceSelector"
 import BookingSteps from "@/components/booking/BookingSteps";
 import BookingSummary from "@/components/booking/BookingSummary";
 import BookingDateTimeSelector from "@/components/booking/BookingDateTimeSelector";
-import { ArrowLeft, Check, X } from "lucide-react";
-import { format, parseISO } from "date-fns";
-import { es } from "date-fns/locale";
+import { ArrowLeft, X } from "lucide-react";
+import BookingSuccessCard from "@/components/booking/BookingSuccesCard";
+import BookingConfirmationStep from "@/components/booking/BookingConfirmationStep";
 
 type BookingStep = "services" | "professional" | "hour" | "confirm";
 
@@ -38,15 +38,31 @@ export default function BookAppointmentPage() {
   const [submitError, setSubmitError] = useState("");
   const [createdAppointment, setCreatedAppointment] =
     useState<AppointmentResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!businessId) {
+      setError("No se encontró el negocio.");
+      setIsLoading(false);
       return;
     }
 
     const loadBusiness = async () => {
-      const data = await businessService.getPublicById(businessId);
-      setBusiness(data);
+      try {
+        setIsLoading(true);
+        setError("");
+
+        const data = await businessService.getPublicById(businessId);
+
+        setBusiness(data);
+      } catch {
+        setError(
+          "No se pudo cargar la información del negocio. Intentá nuevamente.",
+        );
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     loadBusiness();
@@ -160,6 +176,42 @@ export default function BookAppointmentPage() {
       !!selectedDate &&
       !!selectedTime);
 
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-neutral-50">
+        <div className="page-container flex min-h-[70vh] items-center justify-center">
+          <p className="text-sm text-neutral-500">
+            Cargando información del negocio...
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="min-h-screen bg-neutral-50">
+        <div className="page-container flex min-h-[70vh] items-center justify-center">
+          <div className="w-full max-w-md rounded-xl border border-neutral-200 bg-white p-6 text-center">
+            <h1 className="text-xl font-semibold text-neutral-950">
+              No pudimos cargar el negocio
+            </h1>
+
+            <p className="mt-2 text-sm text-neutral-600">{error}</p>
+
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="mt-6 rounded-lg border border-neutral-200 bg-neutral-50 px-5 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-100"
+            >
+              Volver
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   if (!business) {
     return null;
   }
@@ -187,191 +239,74 @@ export default function BookAppointmentPage() {
       </div>
 
       {createdAppointment ? (
-  <div className="page-container pb-12">
-    <section className="mx-auto max-w-2xl rounded-2xl border border-neutral-200 bg-white p-8">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-        <Check className="h-6 w-6" />
-      </div>
+        <BookingSuccessCard
+          appointment={createdAppointment}
+          onClose={handleClose}
+        />
+      ) : (
+        <div className="page-container grid gap-10 pb-12 lg:grid-cols-[minmax(0,1fr)_360px]">
+          <div className="min-w-0">
+            <BookingSteps currentStep={step} onStepChange={setStep} />
 
-      <h1 className="mt-6 text-3xl font-semibold tracking-tight text-neutral-950">
-        Reserva creada
-      </h1>
-
-      <p className="mt-2 text-neutral-600">
-        Tu turno fue registrado correctamente.
-      </p>
-
-      <div className="mt-8 divide-y divide-neutral-200 rounded-xl border border-neutral-200">
-        <div className="flex items-center justify-between gap-4 px-5 py-4">
-          <span className="text-sm text-neutral-500">Servicio</span>
-
-          <span className="text-right font-medium text-neutral-950">
-            {createdAppointment.serviceName}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between gap-4 px-5 py-4">
-          <span className="text-sm text-neutral-500">Profesional</span>
-
-          <span className="text-right font-medium text-neutral-950">
-            {createdAppointment.employeeName}
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between gap-4 px-5 py-4">
-          <span className="text-sm text-neutral-500">Fecha</span>
-
-          <span className="text-right font-medium text-neutral-950">
-            {format(
-              parseISO(createdAppointment.startDate),
-              "d 'de' MMMM 'de' yyyy",
-              { locale: es },
+            {step === "services" && (
+              <BookingServiceSelector
+                services={business.services}
+                serviceCategories={business.serviceCategories}
+                selectedServiceId={selectedServiceId}
+                selectedCategoryId={selectedCategoryId}
+                onServiceSelect={handleServiceSelect}
+                onCategoryChange={setSelectedCategoryId}
+              />
             )}
-          </span>
-        </div>
 
-        <div className="flex items-center justify-between gap-4 px-5 py-4">
-          <span className="text-sm text-neutral-500">Hora</span>
-
-          <span className="text-right font-medium text-neutral-950">
-            {format(
-              parseISO(createdAppointment.startDate),
-              "HH:mm",
+            {step === "professional" && (
+              <BookingProfessionalSelector
+                employees={business.employees}
+                selectedEmployeeId={selectedEmployeeId}
+                onEmployeeSelect={handleEmployeeSelect}
+              />
             )}
-          </span>
-        </div>
 
-        <div className="flex items-center justify-between gap-4 px-5 py-4">
-          <span className="text-sm text-neutral-500">Total</span>
+            {step === "hour" && selectedEmployee && selectedService && (
+              <BookingDateTimeSelector
+                userBusinessId={selectedEmployee.id}
+                serviceId={selectedService.id}
+                selectedDate={selectedDate}
+                selectedTime={selectedTime}
+                onDateChange={(date) => {
+                  setSelectedDate(date);
+                  setSelectedTime("");
+                  setSubmitError("");
+                }}
+                onTimeSelect={(time) => {
+                  setSelectedTime(time);
+                  setSubmitError("");
+                }}
+              />
+            )}
 
-          <span className="text-right font-semibold text-neutral-950">
-            ${createdAppointment.price}
-          </span>
-        </div>
-      </div>
-
-      <p className="mt-5 text-sm text-neutral-500">
-        La reserva quedó pendiente de confirmación.
-      </p>
-
-      <button
-        type="button"
-        onClick={handleClose}
-        className="mt-8 cursor-pointer rounded-lg bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-      >
-        Volver al negocio
-      </button>
-    </section>
-  </div>
-) : (
-  <div className="page-container grid gap-10 pb-12 lg:grid-cols-[minmax(0,1fr)_360px]">
-    <div className="min-w-0">
-      <BookingSteps currentStep={step} onStepChange={setStep} />
-
-      {step === "services" && (
-        <BookingServiceSelector
-          services={business.services}
-          serviceCategories={business.serviceCategories}
-          selectedServiceId={selectedServiceId}
-          selectedCategoryId={selectedCategoryId}
-          onServiceSelect={handleServiceSelect}
-          onCategoryChange={setSelectedCategoryId}
-        />
-      )}
-
-      {step === "professional" && (
-        <BookingProfessionalSelector
-          employees={business.employees}
-          selectedEmployeeId={selectedEmployeeId}
-          onEmployeeSelect={handleEmployeeSelect}
-        />
-      )}
-
-      {step === "hour" && selectedEmployee && selectedService && (
-        <BookingDateTimeSelector
-          userBusinessId={selectedEmployee.id}
-          serviceId={selectedService.id}
-          selectedDate={selectedDate}
-          selectedTime={selectedTime}
-          onDateChange={(date) => {
-            setSelectedDate(date);
-            setSelectedTime("");
-            setSubmitError("");
-          }}
-          onTimeSelect={(time) => {
-            setSelectedTime(time);
-            setSubmitError("");
-          }}
-        />
-      )}
-
-      {step === "confirm" && selectedService && selectedEmployee && (
-        <section className="mt-8">
-          <h1 className="text-4xl font-semibold tracking-tight text-neutral-950">
-            Confirmar reserva
-          </h1>
-
-          <div className="mt-8 rounded-xl border border-neutral-200 bg-white p-5">
-            <div>
-              <p className="text-sm text-neutral-500">Servicio</p>
-
-              <p className="mt-1 font-medium text-neutral-950">
-                {selectedService.name}
-              </p>
-            </div>
-
-            <div className="mt-5">
-              <p className="text-sm text-neutral-500">Profesional</p>
-
-              <p className="mt-1 font-medium text-neutral-950">
-                {selectedEmployee.firstName} {selectedEmployee.lastName}
-              </p>
-            </div>
-
-            <div className="mt-5">
-              <p className="text-sm text-neutral-500">Fecha</p>
-
-              <p className="mt-1 font-medium text-neutral-950">
-                {format(
-                  parseISO(selectedDate),
-                  "EEEE d 'de' MMMM",
-                  { locale: es },
-                )}
-              </p>
-            </div>
-
-            <div className="mt-5">
-              <p className="text-sm text-neutral-500">Hora</p>
-
-              <p className="mt-1 font-medium text-neutral-950">
-                {selectedTime.slice(0, 5)}
-              </p>
-            </div>
-
-            <div className="mt-5">
-              <p className="text-sm text-neutral-500">Precio</p>
-
-              <p className="mt-1 font-medium text-neutral-950">
-                ${selectedService.price}
-              </p>
-            </div>
+            {step === "confirm" && selectedService && selectedEmployee && (
+              <BookingConfirmationStep
+                service={selectedService}
+                employee={selectedEmployee}
+                selectedDate={selectedDate}
+                selectedTime={selectedTime}
+              />
+            )}
           </div>
-        </section>
-      )}
-    </div>
 
-    <BookingSummary
-      business={business}
-      selectedService={selectedService}
-      selectedEmployee={selectedEmployee}
-      step={step}
-      canContinue={canContinue}
-      isSubmitting={isSubmitting}
-      submitError={submitError}
-      onContinue={handleContinue}
-    />
-  </div>
-)}
+          <BookingSummary
+            business={business}
+            selectedService={selectedService}
+            selectedEmployee={selectedEmployee}
+            step={step}
+            canContinue={canContinue}
+            isSubmitting={isSubmitting}
+            submitError={submitError}
+            onContinue={handleContinue}
+          />
+        </div>
+      )}
     </main>
   );
 }
