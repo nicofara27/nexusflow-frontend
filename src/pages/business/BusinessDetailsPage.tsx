@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router";
+import axios from "axios";
 
 import BusinessAside from "@/components/business/BusinessAside";
 import BusinessTeam from "@/components/business/BusinessTeam";
@@ -9,6 +10,7 @@ import BusinessGallery from "@/components/business/gallery/BusinessGallery";
 import BusinessAbout from "@/components/business/BusinessAbout";
 import BusinessLocation from "@/components/business/BusinessLocation";
 import BusinessHours from "@/components/business/BusinessHours";
+import BusinessDetailsState from "@/components/business/BusinessDetailsState";
 
 import { businessService } from "@/services/business.service";
 import type { BusinessGalleryHandle } from "@/types/gallery.types";
@@ -20,7 +22,9 @@ export default function BusinessDetailsPage() {
     useState<BusinessPublicDetailsResponse | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [errorType, setErrorType] = useState<"not-found" | "error" | null>(
+    null,
+  );
 
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -29,18 +33,25 @@ export default function BusinessDetailsPage() {
 
   useEffect(() => {
     if (!id) {
-      setError("No se encontró el emprendimiento.");
+      setErrorType("not-found");
       setIsLoading(false);
       return;
     }
 
     const loadBusiness = async () => {
       try {
+        setIsLoading(true);
+        setErrorType(null);
+
         const data = await businessService.getPublicById(id);
 
         setBusiness(data);
-      } catch {
-        setError("No se pudo cargar el emprendimiento.");
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+          setErrorType("not-found");
+        } else {
+          setErrorType("error");
+        }
       } finally {
         setIsLoading(false);
       }
@@ -61,11 +72,26 @@ export default function BusinessDetailsPage() {
   };
 
   if (isLoading) {
-    return <p>Cargando emprendimiento...</p>;
+    return <BusinessDetailsState type="loading" />;
   }
 
-  if (error || !business) {
-    return <p>{error ?? "No se encontró el emprendimiento."}</p>;
+  if (errorType) {
+    return (
+      <BusinessDetailsState
+        type={errorType}
+        onBack={() => {
+          if (window.history.length > 1) {
+            navigate(-1);
+          } else {
+            navigate("/");
+          }
+        }}
+      />
+    );
+  }
+
+  if (!business) {
+    return null;
   }
 
   const employeePortfolios = business.employees.map((employee) => ({
