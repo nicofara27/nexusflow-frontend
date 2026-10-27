@@ -3,6 +3,7 @@ import type {
   AppointmentRequest,
   AppointmentResponse,
   AvailableTimeResponse,
+  ClientAppointmentResponse,
 } from "@/types/booking.types";
 
 export const appointmentService = {
@@ -28,8 +29,20 @@ export const appointmentService = {
     return response.data;
   },
 
-  async confirmAppointment(token: string) {
+  async confirmAppointment(token: string) : Promise<AppointmentResponse>  {
     const response = await api.post("appointment/confirm", { token });
+
+    return response.data;
+  },
+
+  async cancelAppointment(appointmentId: string) : Promise<AppointmentResponse> {
+    const response = await api.post(`appointment/${appointmentId}/cancel`, { appointmentId });
+    
+    return response.data;
+  },
+
+  async getClientAppointments() : Promise<ClientAppointmentResponse[]> {
+    const response = await api.get<ClientAppointmentResponse[]>("/appointment/my");
 
     return response.data;
   }
