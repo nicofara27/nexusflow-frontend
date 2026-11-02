@@ -4,6 +4,7 @@ import type {
   AppointmentResponse,
   AvailableTimeResponse,
   ClientAppointmentResponse,
+  ManagedAppointmentResponse,
 } from "@/types/booking.types";
 
 export const appointmentService = {
@@ -24,26 +25,54 @@ export const appointmentService = {
     return response.data;
   },
 
-  async createAppointment(data: AppointmentRequest,): Promise<AppointmentResponse> {
+  async createAppointment(
+    data: AppointmentRequest,
+  ): Promise<AppointmentResponse> {
     const response = await api.post<AppointmentResponse>("/appointment", data);
     return response.data;
   },
 
-  async confirmAppointment(token: string) : Promise<AppointmentResponse>  {
+  async confirmAppointment(token: string): Promise<AppointmentResponse> {
     const response = await api.post("appointment/confirm", { token });
 
     return response.data;
   },
 
-  async cancelAppointment(appointmentId: string) : Promise<AppointmentResponse> {
-    const response = await api.post(`appointment/${appointmentId}/cancel`, { appointmentId });
-    
+  async completeAppointment(
+    appointmentId: string,
+  ): Promise<AppointmentResponse> {
+    const response = await api.post<AppointmentResponse>(
+      `/appointment/${appointmentId}/complete`,
+    );
+
     return response.data;
   },
 
-  async getClientAppointments() : Promise<ClientAppointmentResponse[]> {
-    const response = await api.get<ClientAppointmentResponse[]>("/appointment/my");
+  async cancelAppointment(appointmentId: string): Promise<AppointmentResponse> {
+    const response = await api.post(`appointment/${appointmentId}/cancel`, {
+      appointmentId,
+    });
 
     return response.data;
-  }
+  },
+
+  async getClientAppointments(): Promise<ClientAppointmentResponse[]> {
+    const response =
+      await api.get<ClientAppointmentResponse[]>("/appointment/my");
+
+    return response.data;
+  },
+
+  async getManagedAppointments(
+    employeeId?: string,
+  ): Promise<ManagedAppointmentResponse[]> {
+    const response = await api.get<ManagedAppointmentResponse[]>(
+      "/appointment/managed",
+      {
+        params: employeeId ? { employeeId } : undefined,
+      },
+    );
+
+    return response.data;
+  },
 };

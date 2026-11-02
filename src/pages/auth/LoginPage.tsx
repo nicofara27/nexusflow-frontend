@@ -24,6 +24,7 @@ export default function LoginPage() {
     try {
       const response = await authService.login(data);
       setAuth(response);
+      
       navigate("/");
     } catch (error) {
       form.setError("root", { message: "Email o contraseña incorrectos" });

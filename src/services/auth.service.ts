@@ -27,7 +27,6 @@ export const authService = {
           refreshPromise = null;
         });
     }
-
     return refreshPromise;
   },
 

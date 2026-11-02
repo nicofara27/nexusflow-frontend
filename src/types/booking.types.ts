@@ -17,6 +17,17 @@ export interface ClientAppointmentResponse {
   price: number;
 }
 
+export interface ManagedAppointmentResponse {
+  id: string;
+  clientName: string;
+  serviceName: string;
+  employeeName: string;
+  startDate: string;
+  endDate: string;
+  status: AppointmentStatus;
+  price: number;
+}
+
 export interface AppointmentRequest {
   employeeId: string;
   serviceId: string;

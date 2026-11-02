@@ -9,6 +9,7 @@ import BookAppointmentPage from "@/pages/bookAppointment/BookAppointmentPage";
 import ConfirmAppointmentPage from "@/pages/confirmAppointment/ConfirmAppointmentPage";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import MyAppointmentsPage from "@/pages/appointments/myAppointmentsPage";
+import ManageAppointmentsPage from "@/pages/appointments/ManageAppointmentsPage";
 
 export function AppRouter() {
   return (
@@ -30,6 +31,15 @@ export function AppRouter() {
 
           <Route element={<ProtectedRoute />}>
             <Route path="/appointments" element={<MyAppointmentsPage />} />
+          </Route>
+
+          <Route
+            element={<ProtectedRoute allowedRoles={["Admin", "Employee"]} />}
+          >
+            <Route
+              path="/appointments/manage"
+              element={<ManageAppointmentsPage />}
+            />
           </Route>
         </Route>
 

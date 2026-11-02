@@ -54,6 +54,12 @@ export interface EmployeePublicResponse {
   portfolioImages: EmployeePortfolioImagePublicResponse[];
 }
 
+export interface EmployeeSimpleResponse {
+  id: string;
+  firstName: string;
+  lastName: string;
+}
+
 export interface ReviewResponse {
   id: string;
   author: string;
