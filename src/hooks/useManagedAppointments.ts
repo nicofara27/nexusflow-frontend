@@ -4,7 +4,7 @@ import { appointmentService } from "@/services/appointment.service";
 import { employeeService } from "@/services/employee.service";
 import { useAuthStore } from "@/store/auth.store";
 import type { ManagedAppointmentResponse } from "@/types/booking.types";
-import type { EmployeePublicResponse } from "@/types/business.types";
+import type { EmployeePublicResponse, EmployeeSimpleResponse } from "@/types/business.types";
 
 export function useManagedAppointments() {
   const user = useAuthStore((state) => state.user);
@@ -14,7 +14,7 @@ export function useManagedAppointments() {
     ManagedAppointmentResponse[]
   >([]);
 
-  const [employees, setEmployees] = useState<EmployeePublicResponse[]>([]);
+  const [employees, setEmployees] = useState<EmployeeSimpleResponse[]>([]);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
 
   const [isLoading, setIsLoading] = useState(true);
