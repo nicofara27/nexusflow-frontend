@@ -15,6 +15,7 @@ export interface ClientAppointmentResponse {
   endDate: string;
   status: AppointmentStatus;
   price: number;
+  hasReview: boolean;
 }
 
 export interface ManagedAppointmentResponse {

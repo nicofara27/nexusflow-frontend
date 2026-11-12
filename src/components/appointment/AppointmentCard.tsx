@@ -2,6 +2,7 @@ import type {
   AppointmentStatus,
   ClientAppointmentResponse,
 } from "@/types/booking.types";
+import ReviewDialog from "@/components/appointment/ReviewDialog";
 import { Link } from "react-router";
 import { CalendarDays, Clock, MapPin, UserRound } from "lucide-react";
 import { format, parseISO } from "date-fns";
@@ -11,6 +12,11 @@ import { useState } from "react";
 type AppointmentCardProps = {
   appointment: ClientAppointmentResponse;
   onCancel: (appointmentId: string) => void;
+  onReview: (
+    appointmentId: string,
+    rating: number,
+    comment: string | null,
+  ) => Promise<void>;
 };
 
 const statusConfig: Record<
@@ -41,6 +47,7 @@ const statusConfig: Record<
 export default function AppointmentCard({
   appointment,
   onCancel,
+  onReview,
 }: AppointmentCardProps) {
   const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
@@ -134,6 +141,19 @@ export default function AppointmentCard({
             Cancelar turno
           </button>
         )}
+        {appointment.status === "Completed" &&
+          (appointment.hasReview ? (
+            <span className="text-sm text-neutral-500">
+              Ya dejaste una reseña
+            </span>
+          ) : (
+            <ReviewDialog
+              businessName={appointment.businessName}
+              onSubmit={(rating, comment) =>
+                onReview(appointment.id, rating, comment)
+              }
+            />
+          ))}
       </div>
       {canCancel && showCancelConfirmation && (
         <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4">

@@ -8,7 +8,7 @@ import BusinessDetailsPage from "@/pages/business/BusinessDetailsPage";
 import BookAppointmentPage from "@/pages/bookAppointment/BookAppointmentPage";
 import ConfirmAppointmentPage from "@/pages/confirmAppointment/ConfirmAppointmentPage";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import MyAppointmentsPage from "@/pages/appointments/myAppointmentsPage";
+import MyAppointmentsPage from "@/pages/appointments/MyAppointmentsPage";
 import ManageAppointmentsPage from "@/pages/appointments/ManageAppointmentsPage";
 
 export function AppRouter() {

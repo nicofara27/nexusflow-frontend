@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import { CalendarDays, Loader2 } from "lucide-react";
 import { appointmentService } from "@/services/appointment.service";
+import { reviewService } from "@/services/review.service";
 import AppointmentCard from "@/components/appointment/AppointmentCard";
 import type { ClientAppointmentResponse } from "@/types/booking.types";
 
 type AppointmentView = "upcoming" | "history";
 
 export default function MyAppointmentsPage() {
-  const [appointments, setAppointments] = useState<ClientAppointmentResponse[]>(
-    [],
-  );
+  const [appointments, setAppointments] = useState<ClientAppointmentResponse[]>([]);
   const [view, setView] = useState<AppointmentView>("upcoming");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -57,6 +56,26 @@ export default function MyAppointmentsPage() {
               ...appointment,
               status: updatedAppointment.status,
             }
+          : appointment,
+      ),
+    );
+  };
+
+  const handleReviewAppointment = async (
+    appointmentId: string,
+    rating: number,
+    comment: string | null,
+  ) => {
+    await reviewService.createReview({
+      appointmentId,
+      rating,
+      comment,
+    });
+
+    setAppointments((currentAppointments) =>
+      currentAppointments.map((appointment) =>
+        appointment.id === appointmentId
+          ? { ...appointment, hasReview: true }
           : appointment,
       ),
     );
@@ -145,6 +164,7 @@ export default function MyAppointmentsPage() {
                   key={appointment.id}
                   appointment={appointment}
                   onCancel={handleCancelAppointment}
+                  onReview={handleReviewAppointment}
                 />
               ))}
             </div>

@@ -68,6 +68,12 @@ export interface ReviewResponse {
   createdAt: string;
 }
 
+export interface ReviewRequest {
+  appointmentId: string;
+  rating: number;
+  comment: string | null;
+}
+
 export interface ServiceCategoryPublicResponse {
   id: string;
   name: string;
