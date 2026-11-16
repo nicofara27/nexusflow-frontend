@@ -10,6 +10,8 @@ import ConfirmAppointmentPage from "@/pages/confirmAppointment/ConfirmAppointmen
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import MyAppointmentsPage from "@/pages/appointments/MyAppointmentsPage";
 import ManageAppointmentsPage from "@/pages/appointments/ManageAppointmentsPage";
+import AccountLayout from "@/components/layout/AccountLayout";
+import ProfilePage from "@/pages/profile/ProfilePage";
 
 export function AppRouter() {
   return (
@@ -30,7 +32,10 @@ export function AppRouter() {
           <Route path="/confirm" element={<ConfirmAppointmentPage />} />
 
           <Route element={<ProtectedRoute />}>
-            <Route path="/appointments" element={<MyAppointmentsPage />} />
+            <Route element={<AccountLayout />}>
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/appointments" element={<MyAppointmentsPage />} />
+            </Route>
           </Route>
 
           <Route

@@ -8,7 +8,9 @@ import type { ClientAppointmentResponse } from "@/types/booking.types";
 type AppointmentView = "upcoming" | "history";
 
 export default function MyAppointmentsPage() {
-  const [appointments, setAppointments] = useState<ClientAppointmentResponse[]>([]);
+  const [appointments, setAppointments] = useState<ClientAppointmentResponse[]>(
+    [],
+  );
   const [view, setView] = useState<AppointmentView>("upcoming");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -83,7 +85,7 @@ export default function MyAppointmentsPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-neutral-50">
+      <main className="bg-neutral-50">
         <div className="page-container flex min-h-[70vh] items-center justify-center">
           <div className="flex flex-col items-center">
             <Loader2 className="h-7 w-7 animate-spin text-primary" />
@@ -98,7 +100,7 @@ export default function MyAppointmentsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-neutral-50">
+    <main className="bg-neutral-50">
       <div className="page-container py-10">
         <div className="mx-auto max-w-3xl">
           <h1 className="text-3xl font-semibold tracking-tight text-neutral-950">
