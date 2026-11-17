@@ -6,6 +6,7 @@ interface AuthState {
   user: User | null;
   setAuth: (data: AuthResponse) => void;
   clearAuth: () => void;
+  updateProfile: (firstName: string, lastName: string) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -28,4 +29,15 @@ export const useAuthStore = create<AuthState>((set) => ({
       token: null,
       user: null,
     }),
+
+  updateProfile: (firstName, lastName) =>
+    set((state) => ({
+      user: state.user
+        ? {
+            ...state.user,
+            firstName,
+            lastName,
+          }
+        : null,
+    })),
 }));
