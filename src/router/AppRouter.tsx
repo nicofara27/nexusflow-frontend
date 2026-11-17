@@ -12,6 +12,7 @@ import MyAppointmentsPage from "@/pages/appointments/MyAppointmentsPage";
 import ManageAppointmentsPage from "@/pages/appointments/ManageAppointmentsPage";
 import AccountLayout from "@/components/layout/AccountLayout";
 import ProfilePage from "@/pages/profile/ProfilePage";
+import BusinessLayout from "@/components/layout/BusinessLayout";
 
 export function AppRouter() {
   return (
@@ -41,10 +42,12 @@ export function AppRouter() {
           <Route
             element={<ProtectedRoute allowedRoles={["Admin", "Employee"]} />}
           >
-            <Route
-              path="/appointments/manage"
-              element={<ManageAppointmentsPage />}
-            />
+            <Route element={<BusinessLayout />}>
+              <Route
+                path="/appointments/manage"
+                element={<ManageAppointmentsPage />}
+              />
+            </Route>
           </Route>
         </Route>
 

@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "react-router";
 import { Menu } from "@base-ui/react/menu";
 import {
-  CalendarDays,
   ChevronDown,
   LogOut,
   BriefcaseBusiness,
@@ -83,14 +82,6 @@ export default function PublicNavbar() {
                           Panel de trabajo
                         </Menu.Item>
                       )}
-
-                      <Menu.Item
-                        onClick={() => navigate("/appointments")}
-                        className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-sm outline-none data-[highlighted]:bg-neutral-100"
-                      >
-                        <CalendarDays className="h-4 w-4" />
-                        Mis turnos
-                      </Menu.Item>
                     </div>
 
                     <Menu.Separator className="h-px bg-neutral-200" />

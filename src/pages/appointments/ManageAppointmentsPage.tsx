@@ -55,7 +55,7 @@ export default function ManageAppointmentsPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-neutral-50">
+      <main className="bg-neutral-50">
         <div className="page-container flex min-h-[70vh] items-center justify-center">
           <Loader2 className="h-7 w-7 animate-spin text-primary" />
         </div>
@@ -64,15 +64,17 @@ export default function ManageAppointmentsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-neutral-50">
+    <main className="bg-neutral-50">
       <div className="page-container py-10">
         <div className="mx-auto max-w-3xl">
           <h1 className="text-3xl font-semibold tracking-tight text-neutral-950">
-            Gestión de turnos
+            {isAdmin ? "Gestión de turnos" : "Mis turnos de trabajo"}
           </h1>
 
           <p className="mt-2 text-neutral-600">
-            Consultá y administrá los turnos del negocio.
+            {isAdmin
+              ? "Consultá y administrá los turnos del negocio."
+              : "Consultá y administrá tus turnos de trabajo."}
           </p>
 
           {isAdmin && (
