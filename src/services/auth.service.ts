@@ -3,6 +3,7 @@ import type {
   LoginRequest,
   AuthResponse,
   RegisterRequest,
+  ChangePasswordRequest,
 } from "@/types/auth.types";
 
 let refreshPromise: Promise<AuthResponse> | null = null;
@@ -30,7 +31,13 @@ export const authService = {
     return refreshPromise;
   },
 
-  async logout() : Promise<void> {
-    await api.post("/auth/logout")
-  }
+  async logout(): Promise<void> {
+    await api.post("/auth/logout");
+  },
+
+  async changePassword(data: ChangePasswordRequest): Promise<AuthResponse> {
+    const response = await api.put<AuthResponse>("/auth/change-password", data);
+
+    return response.data;
+  },
 };

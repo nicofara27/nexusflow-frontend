@@ -67,7 +67,7 @@ export default function ProfilePage() {
 
   return (
     <main className="p-6 lg:p-10">
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto   ">
         <h1 className="text-3xl font-semibold text-neutral-950">Mi perfil</h1>
 
         <p className="mt-2 text-neutral-600">

@@ -13,6 +13,7 @@ import ManageAppointmentsPage from "@/pages/appointments/ManageAppointmentsPage"
 import AccountLayout from "@/components/layout/AccountLayout";
 import ProfilePage from "@/pages/profile/ProfilePage";
 import BusinessLayout from "@/components/layout/BusinessLayout";
+import SecurityPage from "@/pages/security/SecurityPage";
 
 export function AppRouter() {
   return (
@@ -36,6 +37,7 @@ export function AppRouter() {
             <Route element={<AccountLayout />}>
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/appointments" element={<MyAppointmentsPage />} />
+              <Route path="/security" element={<SecurityPage />} />
             </Route>
           </Route>
 

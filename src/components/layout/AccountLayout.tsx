@@ -31,13 +31,10 @@ export default function AccountLayout() {
               Mis turnos
             </NavLink>
 
-            <div
-              className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-neutral-400"
-              title="Próximamente"
-            >
+            <NavLink to="/security" className={linkClass}>
               <ShieldCheck className="h-5 w-5 shrink-0" />
               Seguridad
-            </div>
+            </NavLink>
           </nav>
         </div>
       </aside>
